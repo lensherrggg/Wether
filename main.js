@@ -1,10 +1,31 @@
-var city = "suzhou";
+var city = "北京市";
 var whichDay = ["今天", "明天", "后天"];
-var apiDay = "https://api.seniverse.com/v3/weather/now.json?key=" + key + "&location=" + city + "&language=zh-Hans&unit=c";
-var apiDaily = "https://api.seniverse.com/v3/weather/daily.json?key=" + key + "&location=" + city + "&language=zh-Hans&unit=c&start=0&days=3";
+
+var apiCity = "http://api.map.baidu.com/location/ip?ak=" + baiduKey;
+
+loadCity();
+function loadCity() {
+  $.ajax({
+    type: "GET",
+    url: apiCity,
+    async: false,
+    success: function (response) {
+      // setCity(response);
+      city = response.content.address_detail.city;
+    }
+  })
+}
+
+var apiDay = "https://api.seniverse.com/v3/weather/now.json?key=" + seniverseKey + "&location=" + city + "&language=zh-Hans&unit=c";
+var apiDaily = "https://api.seniverse.com/v3/weather/daily.json?key=" + seniverseKey + "&location=" + city + "&language=zh-Hans&unit=c&start=0&days=3";
 
 loadDay();
 loadDaily();
+
+
+function setCity(data) {
+  city = data.content.address_detail.city;
+}
 
 function loadDay () {
   $.ajax({
@@ -17,7 +38,7 @@ function loadDay () {
   })
 }
 
-function loadDaily () {
+function loadDaily() {
   $.ajax({
     type: "GET",
     url: apiDaily,
@@ -26,6 +47,12 @@ function loadDaily () {
       setDailyInfo(response);
     }
   });
+}
+
+function addItem(data) {
+  var item = document.createElement("p");
+  item.innerHTML = data;
+  document.body.appendChild(item);
 }
 
 function setDayInfo(d) {
@@ -81,8 +108,6 @@ function createPic(codeDay, temperature, weather) {
 }
 
 function setDailyInfo(d) {
-  // var lastUpdate = d.results[0].last_update; //
-  // var date = new Date(lastUpdate);
   var data = d.results[0].daily;
   var len = data.length;
   var dates = [];
